@@ -3,207 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>星空寧靜時鐘 - 勵志整合版</title>
+    <title>極致互動星空時鐘</title>
     <style>
         :root {
-            --space-black: #05070a;
-            --nebula-purple: rgba(75, 0, 130, 0.3);
-            --nebula-blue: rgba(25, 25, 112, 0.4);
+            --space-black: #020406;
             --text-glow: #00d4ff;
-            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", sans-serif;
+            --aurora-green: rgba(0, 255, 150, 0.2);
+            --font-main: 'Inter', -apple-system, sans-serif;
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: 0; padding: 0; width: 100%; height: 100%;
             background-color: var(--space-black);
-            overflow: hidden;
-            font-family: var(--font-main);
+            overflow: hidden; font-family: var(--font-main);
+            display: flex; justify-content: center; align-items: center;
+            cursor: none; /* 隱藏原生游標以使用自定義光暈 */
         }
 
         /* --- 背景層 --- */
-        .nebula-container {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 30%, var(--nebula-purple) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, var(--nebula-blue) 0%, transparent 40%);
-            filter: blur(80px);
-            z-index: -1;
-            animation: nebulaMove 20s infinite alternate ease-in-out;
+        .background-wrapper {
+            position: absolute; width: 100%; height: 100%; z-index: -1;
+            background: radial-gradient(circle at 50% 100%, #0a192f 0%, #020406 100%);
+            transition: filter 0.3s;
         }
 
-        @keyframes nebulaMove {
-            from { transform: scale(1); }
-            to { transform: scale(1.1) translate(1%, 1%); }
+        .aurora {
+            position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
+            background: radial-gradient(circle at 50% 50%, var(--aurora-green), transparent 45%);
+            filter: blur(60px); opacity: 0.4;
+            animation: auroraRotate 40s infinite linear;
         }
 
+        @keyframes auroraRotate {
+            from { transform: rotate(0deg) scale(1); }
+            to { transform: rotate(360deg) scale(1.1); }
+        }
+
+        /* --- 星星元件 --- */
         .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            opacity: 0;
-            animation: twinkle var(--duration) infinite ease-in-out;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; transform: scale(0.8); }
-            50% { opacity: 0.7; transform: scale(1.1); }
+            position: absolute; background: white; border-radius: 50%;
+            pointer-events: none; transition: transform 0.1s linear;
         }
 
         .shooting-star {
-            position: absolute;
-            height: 2px;
-            background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);
-            border-radius: 999px;
-            filter: drop-shadow(0 0 6px white);
-            z-index: 1;
-            transform: rotate(-45deg);
-            pointer-events: none;
+            position: absolute; height: 2px; background: linear-gradient(90deg, #fff, transparent);
+            pointer-events: none; z-index: 5;
         }
 
-        /* --- 主面板 --- */
+        /* --- 自定義游標光暈 --- */
+        .cursor-aura {
+            position: fixed; width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.08) 0%, transparent 70%);
+            border-radius: 50%; pointer-events: none; z-index: 1;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        /* --- 時鐘面板 (3D 傾斜) --- */
         .glass-panel {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 4rem 6rem;
-            border-radius: 50px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.6);
-            text-align: center;
-            z-index: 10;
-            min-width: 450px;
+            padding: 4rem 6rem; border-radius: 60px;
+            text-align: center; z-index: 10;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            transition: transform 0.1s ease-out;
+            pointer-events: auto;
         }
 
         #clock {
-            font-size: 8rem;
-            font-weight: 200;
-            color: white;
-            letter-spacing: -2px;
-            text-shadow: 0 0 30px var(--text-glow);
-            margin: 0;
-            line-height: 1;
+            font-size: 8.5rem; font-weight: 100; color: white;
+            text-shadow: 0 0 30px var(--text-glow); margin: 0; line-height: 1;
+            transform: translateZ(50px); /* 讓文字浮現出面板 */
         }
 
         #quote {
-            margin-top: 2rem;
-            font-size: 1.4rem;
-            color: rgba(255, 255, 255, 0.65);
-            letter-spacing: 3px;
-            font-weight: 300;
-            min-height: 1.5em;
-            transition: opacity 1s ease-in-out;
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+            margin-top: 3.5rem; font-size: 1.4rem; color: rgba(255,255,255,0.6);
+            letter-spacing: 4px; transition: opacity 1s; min-height: 1.5em;
+            transform: translateZ(30px);
         }
 
-        @media (max-width: 600px) {
-            .glass-panel { padding: 2rem; min-width: 80%; }
-            #clock { font-size: 4rem; }
-            #quote { font-size: 1rem; }
+        /* 點擊時的粒子 */
+        .click-particle {
+            position: absolute; width: 3px; height: 3px; background: #fff;
+            box-shadow: 0 0 10px #00d4ff; border-radius: 50%; pointer-events: none;
         }
     </style>
 </head>
 <body>
 
-    <div class="nebula-container"></div>
+    <div class="cursor-aura" id="aura"></div>
+    <div class="background-wrapper" id="bg">
+        <div class="aurora"></div>
+    </div>
     <div id="star-field"></div>
     
-    <div class="glass-panel">
+    <div class="glass-panel" id="panel">
         <div id="clock">00:00:00</div>
-        <div id="quote">載入星光中...</div>
+        <div id="quote">移動滑鼠感應星辰，點擊釋放流星</div>
     </div>
 
     <script>
-        // --- 1. 資料與邏輯配置 ---
-        const quotes = [
-            "星光不問趕路人，時光不負有心人。",
-            "縱使身處溝壑，也要仰望星空。",
-            "寧靜致遠，唯有初心不滅。",
-            "熬過萬丈孤獨，藏下星辰大海。",
-            "心有山海，靜而無畏。"
-        ];
+        const quotes = ["星光不問趕路人，時光不負有心人。", "縱使身處溝壑，也要仰望星空。", "寧靜致遠，唯有初心不滅。", "熬過萬丈孤獨，藏下星辰大海。", "心有山海，靜而無畏。"];
+        const starField = document.getElementById('star-field');
+        const panel = document.getElementById('panel');
+        const aura = document.getElementById('aura');
+        const bg = document.getElementById('bg');
+        const stars = [];
 
-        // --- 2. 時鐘功能 ---
+        // 1. 時鐘邏輯
         function updateClock() {
-            const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const s = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+            document.getElementById('clock').textContent = new Date().toTimeString().split(' ')[0];
         }
         setInterval(updateClock, 1000);
         updateClock();
 
-        // --- 3. 隨機金句邏輯 (5秒切換) ---
+        // 2. 金句邏輯
         let lastIdx = -1;
         function updateQuote() {
             const el = document.getElementById('quote');
             let idx;
-            do { 
-                idx = Math.floor(Math.random() * quotes.length); 
-            } while (idx === lastIdx);
+            do { idx = Math.floor(Math.random() * quotes.length); } while (idx === lastIdx);
             lastIdx = idx;
-            
             el.style.opacity = 0;
-            setTimeout(() => {
-                el.textContent = quotes[idx];
-                el.style.opacity = 1;
-            }, 1000);
+            setTimeout(() => { el.textContent = quotes[idx]; el.style.opacity = 1; }, 1000);
         }
         setInterval(updateQuote, 5000);
         updateQuote();
 
-        // --- 4. 生成靜態星星背景 ---
-        const field = document.getElementById('star-field');
-        function initStars() {
-            for (let i = 0; i < 150; i++) {
-                const s = document.createElement('div');
-                s.className = 'star';
-                const size = Math.random() * 2 + 1 + 'px';
-                s.style.width = size;
-                s.style.height = size;
-                s.style.top = Math.random() * 100 + '%';
-                s.style.left = Math.random() * 100 + '%';
-                s.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
-                field.appendChild(s);
-            }
+        // 3. 建立物理星星
+        for (let i = 0; i < 150; i++) {
+            const s = document.createElement('div');
+            s.className = 'star';
+            const size = Math.random() * 2 + 1;
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            s.style.width = size + 'px';
+            s.style.height = size + 'px';
+            s.style.left = '0px';
+            s.style.top = '0px';
+            s.style.transform = `translate(${x}px, ${y}px)`;
+            starField.appendChild(s);
+            stars.push({ el: s, x: x, y: y, originX: x, originY: y });
         }
-        initStars();
 
-        // --- 5. 流星動畫功能 ---
+        // 4. 核心互動：移動
+        window.addEventListener('mousemove', (e) => {
+            // A. 自定義游標光暈
+            aura.style.left = e.clientX + 'px';
+            aura.style.top = e.clientY + 'px';
+
+            // B. 面板 3D 傾斜
+            const rotateX = (window.innerHeight / 2 - e.clientY) / 20;
+            const rotateY = (e.clientX - window.innerWidth / 2) / 20;
+            panel.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+            // C. 星星引力效果
+            stars.forEach(s => {
+                const dx = e.clientX - s.originX;
+                const dy = e.clientY - s.originY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const force = Math.max(0, (200 - dist) / 200); // 200px 內產生引力
+                
+                const moveX = s.originX + dx * force * 0.3;
+                const moveY = s.originY + dy * force * 0.3;
+                s.el.style.transform = `translate(${moveX}px, ${moveY}px) scale(${1 + force})`;
+            });
+        });
+
+        // 5. 核心互動：點擊 (星爆效果)
+        window.addEventListener('mousedown', (e) => {
+            // 背景閃爍
+            bg.style.filter = 'brightness(1.5)';
+            setTimeout(() => bg.style.filter = 'brightness(1)', 150);
+
+            // 產生擴散粒子
+            for (let i = 0; i < 8; i++) {
+                const p = document.createElement('div');
+                p.className = 'click-particle';
+                p.style.left = e.clientX + 'px';
+                p.style.top = e.clientY + 'px';
+                document.body.appendChild(p);
+
+                const angle = (i / 8) * Math.PI * 2;
+                const velocity = 15;
+                const anim = p.animate([
+                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                    { transform: `translate(${Math.cos(angle) * 150}px, ${Math.sin(angle) * 150}px) scale(0)`, opacity: 0 }
+                ], { duration: 800, easing: 'ease-out' });
+                anim.onfinish = () => p.remove();
+            }
+        });
+
+        // 6. 自動流星
         function createShootingStar() {
             const s = document.createElement('div');
             s.className = 'shooting-star';
-            const startX = Math.random() * 50 + 50; 
-            const startY = Math.random() * 40;     
-            s.style.left = startX + '%';
-            s.style.top = startY + '%';
-            
-            const duration = Math.random() * 1000 + 1500;
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight * 0.5;
+            s.style.left = x + 'px';
+            s.style.top = y + 'px';
             const anim = s.animate([
-                { width: '0px', transform: 'rotate(-45deg) translateX(0)' },
-                { width: '180px', opacity: 1, offset: 0.2 },
-                { width: '0px', transform: 'rotate(-45deg) translateX(-1200px)', opacity: 0 }
-            ], { duration: duration, easing: 'ease-out' });
-
-            field.appendChild(s);
+                { width: '0px', transform: 'rotate(-45deg) translateX(0)', opacity: 1 },
+                { width: '200px', transform: 'rotate(-45deg) translateX(-1000px)', opacity: 0 }
+            ], { duration: 1500, easing: 'ease-out' });
+            starField.appendChild(s);
             anim.onfinish = () => s.remove();
         }
-        
-        // 隨機發射流星 (2-7秒不定期出現)
-        (function loop() {
-            setTimeout(() => {
-                createShootingStar();
-                loop();
-            }, Math.random() * 5000 + 2000);
-        }());
+        setInterval(() => { if(Math.random() > 0.5) createShootingStar(); }, 3000);
     </script>
 </body>
 </html>
