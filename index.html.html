@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星空寧靜時鐘 - 勵志版</title>
+    <style>
+        :root {
+            --bg-gradient: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            --text-color: #E6FBFF;
+            --glow: 0 0 20px rgba(0, 212, 255, 0.8);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-gradient);
+            overflow: hidden;
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+        }
+
+        /* 星空背景 */
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--d) infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* 流星 */
+        .shooting-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: linear-gradient(90deg, white, transparent);
+            box-shadow: 0 0 10px white;
+            z-index: 1;
+        }
+
+        @keyframes shoot {
+            0% { transform: translateX(0) translateY(0) rotate(-45deg); opacity: 1; width: 0; }
+            100% { transform: translateX(-800px) translateY(800px) rotate(-45deg); opacity: 0; width: 120px; }
+        }
+
+        /* 內容容器 */
+        .container {
+            text-align: center;
+            z-index: 10;
+        }
+
+        #clock {
+            font-size: 8rem;
+            color: var(--text-color);
+            text-shadow: var(--glow), 0 0 40px rgba(0, 212, 255, 0.4);
+            margin-bottom: 10px;
+            font-weight: 200;
+        }
+
+        #quote {
+            font-size: 1.5rem;
+            color: rgba(230, 251, 255, 0.7);
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+            min-height: 1.6em;
+            transition: opacity 1s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stars" id="star-field"></div>
+    
+    <div class="container">
+        <div id="clock">00:00:00</div>
+        <div id="quote">靜候星光...</div>
+    </div>
+
+    <script>
+        // 1. 金句資料庫
+        const quotes = [
+            "星光不問趕路人，時光不負有心人。",
+            "縱使身處溝壑，也要仰望星空。",
+            "寧靜致遠，唯有初心不滅。",
+            "熬過萬丈孤獨，藏下星辰大海。",
+            "心有山海，靜而無畏。"
+        ];
+
+        // 2. 時鐘邏輯
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toTimeString().split(' ')[0];
+            document.getElementById('clock').textContent = timeString;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // 3. 隨機金句邏輯 (每5秒)
+        let lastIndex = -1;
+        function updateQuote() {
+            const quoteEl = document.getElementById('quote');
+            let nextIndex;
+            
+            // 避免連續抽到重複
+            do {
+                nextIndex = Math.floor(Math.random() * quotes.length);
+            } while (nextIndex === lastIndex);
+            
+            lastIndex = nextIndex;
+
+            // 淡出 -> 換字 -> 淡入
+            quoteEl.style.opacity = 0;
+            setTimeout(() => {
+                quoteEl.textContent = quotes[nextIndex];
+                quoteEl.style.opacity = 1;
+            }, 1000);
+        }
+        setInterval(updateQuote, 5000);
+        updateQuote();
+
+        // 4. 背景裝飾 (星星與流星)
+        const field = document.getElementById('star-field');
+        for (let i = 0; i < 100; i++) {
+            const s = document.createElement('div');
+            s.className = 'star';
+            s.style.width = s.style.height = Math.random() * 3 + 'px';
+            s.style.top = Math.random() * 100 + '%';
+            s.style.left = Math.random() * 100 + '%';
+            s.style.setProperty('--d', Math.random() * 3 + 2 + 's');
+            field.appendChild(s);
+        }
+
+        function createShootingStar() {
+            const star = document.createElement('div');
+            star.className = 'shooting-star';
+            star.style.top = Math.random() * 40 + '%';
+            star.style.left = Math.random() * 60 + 40 + '%';
+            star.style.animation = 'shoot 1.5s ease-out forwards';
+            field.appendChild(star);
+            setTimeout(() => star.remove(), 1500);
+        }
+        setInterval(createShootingStar, 4000);
+    </script>
+</body>
+</html>
