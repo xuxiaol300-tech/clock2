@@ -1,0 +1,53 @@
+<style>
+    #quote {
+        margin-top: 20px;
+        font-size: 1.5rem;
+        color: rgba(230, 251, 255, 0.8);
+        text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        transition: opacity 0.8s ease-in-out;
+        min-height: 1.6em;
+        font-weight: 300;
+        z-index: 10;
+        position: relative;
+    }
+</style>
+
+<div class="container">
+    <div id="clock">00:00:00</div>
+    <div id="quote">載入中...</div>
+</div>
+
+<script>
+    const quotes = [
+        "星光不問趕路人，時光不負有心人。",
+        "縱使身處溝壑，也要仰望星空。",
+        "寧靜致遠，唯有初心不滅。",
+        "熬過萬丈孤獨，藏下星辰大海。",
+        "心有山海，靜而無畏。"
+    ];
+
+    const quoteElement = document.getElementById('quote');
+    let lastIndex = -1;
+
+    function updateQuote() {
+        // 確保不連續抽到同一個句子
+        let randomIndex;
+        do {
+            randomIndex = Math.floor(Math.random() * quotes.length);
+        } while (randomIndex === lastIndex);
+        
+        lastIndex = randomIndex;
+
+        // 淡出動畫
+        quoteElement.style.opacity = 0;
+
+        setTimeout(() => {
+            quoteElement.textContent = quotes[randomIndex];
+            quoteElement.style.opacity = 1;
+        }, 800); // 等待淡出後再換字並淡入
+    }
+
+    // 初始化並設定每 5 秒執行一次
+    updateQuote();
+    setInterval(updateQuote, 5000);
+</script>
